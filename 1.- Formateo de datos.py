@@ -10,7 +10,7 @@ Extraemos los datos diarios
 """
 
 from io import open
-from Main.Modulos import *
+from Modulos.Modulos import *
 import os.path
 import os
 

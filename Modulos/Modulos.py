@@ -167,7 +167,12 @@ def separa_fechas(lista):
 			lista.pop(2)
 
 		if(len(lista)==9): #ya estaríamos con la lista en formato inicial.
-			fecha_comillas=lista[1] #el string fecha va a conservar las comillas, se las quitamos
+			for i in range(len(lista)):
+				aux=lista[i]
+				aux2=aux.replace(chr(34), "") #hacemos esto porque en algunos conjuntos de datos todos los campos aparecen entrecomillados
+				lista[i]=aux2
+
+			fecha_comillas=lista[1] #el string fecha va a conservar las comillas, se las quitamos (esto es redundante con lo anterior, lo dejamos porque mal no hace)
 			fecha=fecha_comillas.replace(chr(34), "") #reemplazamos " por un espacio vacio, como no se puede nombrar " usamos la funcion chr y el codigo de las comillas, 34
 			lista_aux=fecha.split(" ")
 			lista_dia=lista_aux[0].split("-") #aqui tenemos el dia [yyyy, mm, dd], ojo, como str
