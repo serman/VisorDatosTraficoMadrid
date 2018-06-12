@@ -59,8 +59,8 @@ while(seguimos):
   print("2.- Ver definicion de los datos")
   print("3.- Acceder a los los valores de un punto concreto en un periodo de tiempo.")
   print("4.- Comparar los valores de un punto en concreto en un periodo de x días a partir de dos días dados.")
-  print("5.- Media de los valores de un punto concreto en un periodo de tiempo.")
-  print("6.- Comparar la media de los valores de un punto concreto en un periodo de tiempo.")
+  print("5.- Valores medios de un punto de medición en un periodo de tiempo dado.")
+  print("6.- Comparar los valores medios de un punto concreto en dos periodos de tiempo diferentes.")
   print("7.- Salir")
   print("\nSomos conscientes del tema tildes :( Estamos trabajando en ello.")
 
@@ -368,7 +368,8 @@ while(seguimos):
 
   #-------------------------------------------------------------------------------
 
-  if (opcion==5): #Media de los valores de un punto concreto en un periodo de tiempo."
+  if (opcion==5): #Valores medios de un punto de medición en un periodo de tiempo dado.
+
 
     """
     Pedir medidor
@@ -379,7 +380,6 @@ while(seguimos):
     Recorrer la lista 
     Si no hay error en la medición, se suma a los acumuladores y al contador
     Se dividen los acumuladores por el contador y esa es la media.
-
 
     """
 
@@ -458,7 +458,7 @@ while(seguimos):
   
   #-------------------------------------------------------------------------------
 
-  if (opcion==6): #Comparar la media de los valores de un punto concreto en un periodo de tiempo.
+  if (opcion==6): #Comparar los valores medios de un punto concreto en dos periodos de tiempo diferentes.
 
     #Es básicamente hacer dos veces lo que hacemos en el apartado 5 y luego comparar resultados.
 
