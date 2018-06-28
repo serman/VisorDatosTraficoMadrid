@@ -33,6 +33,9 @@ Aqui vamos a poner el menu principal que de acceso a las diferentes funciones.
   Retornará la media de ambos puntos en el periodo de tiempo dado acompañado de su variación en %.
 
 
+De momento sólo podemos usar los conjuntos de datos a partir de enero de 2015, los datos anteriores tienen
+un formato distinto y hay que adaptarlos para que la ID de los lectores sea unívoca.
+
 """
 
 from io import open
@@ -61,23 +64,19 @@ while(seguimos):
   print("4.- Comparar los valores de un punto en concreto en un periodo de x días a partir de dos días dados.")
   print("5.- Valores medios de un punto de medición en un periodo de tiempo dado.")
   print("6.- Comparar los valores medios de un punto concreto en dos periodos de tiempo diferentes.")
-  print("7.- Salir")
+  print("7.- Acceder a los valores de varios medidores en un periodo de tiempo dado")
+  print("8.- Definir un conjunto de medidores")
+  print("9.- Salir")
   print("\nSomos conscientes del tema tildes :( Estamos trabajando en ello.")
 
 
-  while(opcion<1 or opcion>7):
+  while(opcion<1 or opcion>9):
     try:
       opcion=int(input("\nElige una opción: "))
-      if (opcion<1 or opcion>7):
+      if (opcion<1 or opcion>9):
         print("No valido. Elige una opción entre 1 y 7.")
     except ValueError:
-      error_cont+=1
-      if error_cont==15:
-        print("Ánimo, sigue intentándolo.")
-      elif error_cont==30:
-        print("Nope.")
-      elif error_cont==45:
-        print("Si quieres resultados distintos, prueba con algo diferente.")
+      pass
     print("\n")
 
 #--------------------------------------------------------------------------------------------------
@@ -622,7 +621,361 @@ while(seguimos):
 
   #-------------------------------------------------------------------------------
 
-  if (opcion==7):
+  if (opcion==7): #Buscar las medidas de varios medidores en un periodo de tiempo dado
+
+    """
+    Este es fundamentalmente repetir n veces la opción 3.
+
+    Preguntamos si introducir los medidores manualmente o utilizar una malla previa
+    
+    Si se introducen, almacenar los medidores en una lista
+    Si malla previa, cargar los medidores en una lista
+
+    Preguntar si resultado horario o cada 15 minutos
+
+    Hacer la consulta para cada uno de los medidores y almacenar la respuesta.
+
+    Mostrar la respuesta.
+
+    Preguntar si pasar a archivo
+    Si se pasa a archivo, almacenar el resultado de cada medidor en una página distinta de la hoja de cálculo.
+
+    """
+
+    pide_operador_7_1=True
+    operador_7_1=0
+    lista_medidores_7=[]
+
+    while(pide_operador_7_1):
+      print("1.- Introducir los medidores a mano.")
+      print("2.- Cargar un conjunto de medidores")
+      try:
+        operador_7_1=int(input("\n"))
+      except ValueError:
+        pass
+
+      if ((operador_7_1==1) or (operador_7_1==2)):
+        pide_operador_7_1=False
+
+    
+      #Introducir la lista de medidores manualmente:
+      if(operador_7_1==1):
+
+        cadena_entrada_7=input("Introduce la lista de medidores separados por comas.\n")
+
+        lista_medidores_7_str=cadena_entrada_7.split(",")
+
+        lista_medidores_7_int_norepes=[]
+
+        #Eliminamos los repetidos y todo aquello que no sea un entero.
+        for i in lista_medidores_7_str:
+          try:
+            aux=int(i)
+          except ValueError:
+            continue
+          
+          if aux not in lista_medidores_7_int_norepes:
+            lista_medidores_7_int_norepes.append(int(aux))
+
+        lista_medidores_7=lista_medidores_7_int_norepes
+
+    
+      #Cargar un conjunto de medidores previo
+      elif(operador_7_1==2):
+        #Mostrar mallas almacenadas
+
+        #Construimos la ruta del archivo (esta en la carpeta del main)
+        ruta_main=os.path.dirname(os.path.abspath(__file__))
+
+        ruta_archivo=ruta_main+"conjuntos_medidores"
+
+        #Comprobamos la existencia del archivo y si existe lo abrimos.
+        if(os.path.isfile(ruta_archivo)): 
+          archivo_datos=open(ruta_archivo, "r")
+
+          lineas_archivo=0
+
+          #Recorremos el archivo e imprimimos los datos en pantalla. Almacenamos el número de líneas
+          print("\nConjuntos de medidores almacenados: \n")
+
+          for linea in enumerate(archivo_datos):
+            linea_str=str(linea)
+            linea_str=linea_str.replace("\\n","")
+            print (linea_str)
+            lineas_archivo+=1
+
+          #pedimos el número de línea que queremos cargar
+          print("\nElige la lista que deseas cargar introduciendo el primer número de la línea: \n")
+
+          pide_codigo_conjunto=True
+
+          selector_linea=0
+
+          while (pide_codigo_conjunto):
+            try:
+              selector_linea=int(input("Qué línea quieres cargar? -> "))
+            except ValueError:
+              pass
+
+            print("Selector de línea: ", selector_linea)
+
+            if(selector_linea>=0 and selector_linea<lineas_archivo):
+              pide_codigo_conjunto=False
+
+          #posicionamos el cursor al principio del archivo
+          archivo_datos.seek(0)
+
+          for i in range(selector_linea):
+            next(archivo_datos)
+
+          linea_seleccionada=archivo_datos.readline()
+
+          archivo_datos.close()
+
+          #Quitamos el salto de línea, las comillas simples y los corchetes
+          linea_seleccionada=linea_seleccionada.replace("\n","").replace(chr(39),"").replace("[","").replace("]","")
+
+          #Transformamos la linea en lista
+          lista_seleccionada=linea_seleccionada.split(",")
+
+          #Transformamos los campos en enteros, excepto el primero, que es la descripción:
+          lista_seleccionada_tipos=[]
+
+          for i in lista_seleccionada:
+            try:
+              lista_seleccionada_tipos.append(int(i))
+            except ValueError:
+              lista_seleccionada_tipos.append(str(i))
+
+          lista_medidores_7=lista_seleccionada_tipos[1:]
+          
+        else:
+          print("Aún no tienes ningún conjunto de medidores guardado, o se ha perdido el archivo.")
+          #Esto es para que nos devuelva al selector de cargar lista o introducir a mano.
+          pide_operador_7_1=True
+
+
+    #Ya sea introducidos o cargados, ya tenemos la lista de los medidores que tenemos que consultar, pasamos a pedir el periodo de tiempo de la consulta.
+
+    #Pedimos el periodo de tiempo.
+    fechas7=pide_dias() # que nos devuelve esto:  [anio_inicial, mes_inicial, dia_inicial, hora_inicial, anio_final, mes_final, dia_final, hora_final]
+    
+    #Llamamos a genera_fechas, que nos pide (anio_inicial, mes_inicial, dia_inicial, hora_inicial, anio_final, mes_final, dia_final, hora_final) ->  y devuelve una lista de listas: [año] [mes] [dia] [hora inicial] [hora final]
+    lista_fechas_7=genera_fechas(fechas7[0],fechas7[1],fechas7[2],fechas7[3],fechas7[4],fechas7[5],fechas7[6],fechas7[7])
+    
+    #Ahora vamos a preguntar si el resultado en minutos o valores horarios
+    minutos_7=True
+    operador_7_2=0
+
+    while (operador_7_2!=1 and operador_7_2!=2):
+      try:
+        operador_7_2=int(input("\n1.- Mostrar el resultado en mediciones cada 15 minutos\n2.- Mostrar el resultado horario\n"))
+      except ValueError:
+        pass
+
+    if (operador_7_2==2):
+      minutos_7=False
+
+    
+    #Y por último preguntamos si vamos a querer los resultados en hoja de cálculo, lo preguntamos antes porque para hacerlo después habría que guardar todas las consultas en memoria:
+    operador_hoja_de_calculo_7=0
+    sacar_a_hoja_de_calculo_7=False
+
+    while (operador_hoja_de_calculo_7!=1 and operador_hoja_de_calculo_7!=2):
+      try:
+        operador_hoja_de_calculo_7=int(input("\n1.- Copiar el resultado en un archivo de hoja de cálculo\n2.- Mostrar el resultado únicamente en pantalla.\n"))
+      except ValueError:
+        pass
+
+    if (operador_hoja_de_calculo_7==1):
+      sacar_a_hoja_de_calculo_7=True
+
+
+    #Ya tenemos todo para empezar a hacer las consultas.
+
+    for i in lista_medidores_7:
+
+      print("\nMEDIDOR",i,"\n\n")
+      
+      for j in lista_fechas_7:
+        #print("Entramos al bucle para el medidor ", i, "con la fecha", j)
+        ruta_j=genera_ruta_archivo(j[0], j[1], j[2], ruta_main) #genera_ruta_archivo(año, mes, dia, ruta_main)
+        #print("La ruta del archivo en el que se encuentran los datos de la consulta es: ", ruta_j)
+
+        lista_j=extrae_lineas(i, ruta_j, j[3], j[4])
+        #print("La lista de datos según se extrae del archivo es: ", lista_j)
+
+        if(minutos_7):
+          for k in lista_j:
+            print(f"El medidor {i} el día {k[3]} del mes {k[2]} del año {k[1]} a las {k[4]} horas y {k[5]} minutos tuvo unas mediciones de {k[7]} intensidad, {k[8]} ocupación, {k[9]} carga y {k[10]} velocidad media")
+
+        else: #Aquí habría que hacer una nueva llamada a la función agrupar_mediciones_horarias(lista_origen): -> lista de listas con los valores horarios
+          lista_horaria_j=agrupar_mediciones_horarias(lista_j)
+          for k in lista_horaria_j:
+            print(f"El medidor {i} el día {k[3]} del mes {k[2]} del año {k[1]} a las {k[4]} horas tuvo unas mediciones de {k[7]} intensidad, {k[8]} ocupación, {k[9]} carga y {k[10]} velocidad media con {k[13]} mediciones en esa hora.")
+
+        #Para esta versión habría que modificar la función y que nos permita guardar las consultas de los medidores en diferentes hojas de un mismo archivo.
+        
+        if(sacar_a_hoja_de_calculo_7):
+          if(minutos_7):
+            print("Generando archivo de mediciones.")
+            Lista_minutos_a_hoja_de_calculo(i, fechas7, lista_j, ruta_main)
+          else:
+            print("Generando archivo de mediciones horarias.")
+            Lista_horaria_a_hoja_de_calculo(i, fechas7, lista_horaria_j, ruta_main)
+
+
+
+  #-------------------------------------------------------------------------------
+  """
+  Vamos a almacenar los conjuntos de medidores en un archivo llamado "Conjuntos de medidores" en el directorio del main
+  Opciones de este apartado:
+  1.- Ver los conjuntos de medidores almacenados.
+  2.- Almacenar un nuevo conjunto de medidores.
+  3.- Volver al menú anterior.
+
+
+  """
+
+
+  if(opcion==8): #Aqui vamos a gestionar los conjuntos de medidores.
+
+    repetir8=True
+
+    while(repetir8):
+      pide_operador_8=True
+
+      #Operador del menú interno de la opción 8.
+      while (pide_operador_8):
+
+        operador8=0
+
+        print("1.- Ver las listas de medidores guardadas hasta ahora.")
+        print("2.- Almacenar un nuevo conjunto de medidores")
+        print("3.- Volver al menú anterior")
+        
+        try:
+          operador8=int(input("Introduce la opción que quieras: \n"))
+        except ValueError:
+          pass
+
+        if(operador8==1 or operador8==2 or operador8==3):
+          pide_operador_8=False
+
+      if (operador8==1): #Ver las listas de medidores guardadas hasta ahora.
+
+        #Construimos la ruta del archivo (esta en la carpeta del main)
+        ruta_main=os.path.dirname(os.path.abspath(__file__))
+
+        ruta_archivo=ruta_main+"conjuntos_medidores"
+
+        
+
+        #Comprobamos la existencia del archivo y si existe lo abrimos.
+        if(os.path.isfile(ruta_archivo)): 
+          archivo_datos=open(ruta_archivo, "r")
+
+          lineas_archivo=0
+
+          #Recorremos el archivo e imprimimos los datos en pantalla. Almacenamos el número de líneas
+          print("\nConjuntos de medidores almacenados: \n")
+
+          for linea in enumerate(archivo_datos):
+            linea_str=str(linea)
+            linea_str=linea_str.replace("\\n","")
+            print (linea_str)
+            lineas_archivo+=1
+
+          archivo_datos.close()
+          
+        else:
+          print("Aún no tienes ningún conjunto de medidores guardado, o se ha perdido el archivo.")
+
+
+      if(operador8==2): #Almacenar un nuevo conjunto de medidores
+
+        #Pedimos la lista de medidores
+        print("\nIntroduce los medidores separados por comas.")
+        cadena_entrada_8=input("Recuerda, separados por comas, si no no funcion: ")
+
+        #Creamos una lista, separando mediante las comas.
+        lista_medidores_8_str=cadena_entrada_8.split(",")
+
+        #De todos los valores introducidos seleccionamos únicamente los que sean enteros.
+        lista_medidores_8_int_norepes=[]
+
+        for i in lista_medidores_8_str:
+          try:
+            aux=int(i)
+          except ValueError:
+            continue
+
+          if aux not in lista_medidores_8_int_norepes:
+            lista_medidores_8_int_norepes.append(int(aux))
+
+        lista_medidores_8=lista_medidores_8_int_norepes
+
+        print ("Los valores válidos introducidos son: ", lista_medidores_8)
+
+        
+        #Preguntamos si quiere almacenar
+        pide_operador_8_2=True
+
+        while (pide_operador_8_2):
+
+          operador_8_2=0
+
+          print("\n\nQuieres guardar la lista de medidores?")
+          print("1.- Si")
+          print("2.- No")
+          
+          try:
+            operador_8_2=int(input("\n"))
+          except ValueError:
+            pass
+
+          print("")
+
+          if(operador_8_2==1 or operador_8_2==2):
+            pide_operador_8_2=False
+
+          if(operador_8_2==1): #Almacenamos
+            #Pedir descripción.
+            descripcion=input("Introduce una descripción del conjunto de medidores sin comas, comillas o corchetes:\n")
+
+            print("")
+
+            #Crear carpeta si no existe.
+            ruta_main=os.path.dirname(os.path.abspath(__file__))
+
+            ruta_archivo=ruta_main+"conjuntos_medidores"
+
+            #Abrir el archivo en modo append
+            archivo_datos=open(ruta_archivo, "a")
+
+            #Crear una lista con: número de línea, descripción, medidor1,... medidorn
+            lista_escribir=[descripcion]+lista_medidores_8
+
+            #Añadir línea al archivo y saltar de línea
+            archivo_datos.write(str(lista_escribir))
+            archivo_datos.write("\n")
+            
+            #Cerrar archivo
+            archivo_datos.close()
+
+            print("Añadido el conjunto al archivo ", ruta_archivo)
+
+          if (operador_8_2==2): #no hacemos nada
+            pass
+
+      if (operador8==3): #Volver al menú anterior
+        repetir8=False
+
+
+
+  #-------------------------------------------------------------------------------
+
+  if(opcion==9):
     print("Adiooooooos")
     seguimos=False
 
