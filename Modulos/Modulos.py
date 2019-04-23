@@ -379,16 +379,20 @@ def extrae_lineas(codigo, ruta_archivo, hora_inicial, hora_final):
 	resultado=[]
 
 	for i in datos:
-		clave=""
-		for j in i:
-			if (j=="["):
-				pass
-			elif (j==","):
-				break
-			else:
-				clave+=j
-		
-		clave_int=int(clave)
+		if(i=="\n"): #Pasamos la línea en caso de que esté vacía, inicializamos clave_int para que no de error.
+			clave_int=0 
+
+		else:
+			clave=""
+			for j in i:
+				if (j=="["):
+					pass
+				elif (j==","):
+					break
+				else:
+					clave+=j
+			
+			clave_int=int(clave)
 
 		if(clave_int==codigo): #si el codigo de la linea coincide con el codigo del punto de medida que queremos leer
 			linea_datos=i.split(",")
@@ -646,7 +650,7 @@ def pide_dias():
 	prueba=input("Modo prueba?: ")
 
 	if (prueba=="x"):
-		return [2018, 2, 10, 10, 2018, 2, 11, 22]
+		return [2018, 1, 1, 10, 2018, 1, 1, 22]
 			
 
 	while (anio_inicial<2013 or anio_inicial>2018): #si el anio esta fuera del rango 2013 - 2018 
@@ -1332,7 +1336,8 @@ def Lista_minutos_a_hoja_de_calculo(medidor, fechas, lista_resultado_minutos, ru
 		ws.cell(row=1, column=(i+1), value=lista_titulo_columnas[i]) #asignamos a la primera fila los sucesivos valores contenidos en la lista de títulos de columnas.
 
 	longitud_lista=len(lista_resultado_minutos)
-	campos_lista_datos=len(lista_resultado_minutos[0])
+	#Esto da error y tampoco sé qué función tiene.
+	#campos_lista_datos=len(lista_resultado_minutos[0])
 
 	for i in range(longitud_lista):
 		ws.cell(row=(i+2), column=1, value=lista_resultado_minutos[i][0])
@@ -1404,8 +1409,10 @@ def Lista_horaria_a_hoja_de_calculo(medidor, fechas, lista_resultado_horaria, ru
 	for i in range(len(lista_titulo_columnas)):
 		ws.cell(row=1, column=(i+1), value=lista_titulo_columnas[i]) #asignamos a la primera fila los sucesivos valores contenidos en la lista de títulos de columnas.
 
+	#Almacenamos el número de elementos de la lista
 	longitud_lista=len(lista_resultado_horaria)
-	campos_lista_datos=len(lista_resultado_horaria[0])
+	#Esto da error y tampoco se bien qué función tiene. 
+	#campos_lista_datos=len(lista_resultado_horaria[0])
 
 	for i in range(longitud_lista):
 		ws.cell(row=(i+2), column=1, value=lista_resultado_horaria[i][0]) #medidor
