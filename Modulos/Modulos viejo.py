@@ -6,15 +6,6 @@ import os.path
 
 import os
 
-from contextlib import ExitStack
-
-import math
-
-from io import open
-
-from pathlib import Path
-
-
 
 """
 RESUMEN:
@@ -34,9 +25,6 @@ RESUMEN:
 - Genera fechas *
 - pide solo fecha
 - lista minutos a hoja de cálculo
-- get_lines -> número de líneas de un archivo
-- split_csv -> dividir fichero csv
-- ls -> listar archivos de una carpeta
 
 
 los * son funciones en las que hay que definir excepciones
@@ -191,21 +179,9 @@ def separa_fechas(lista):
 			lista_hora=lista_aux[1].split(":") #aqui tenemos la hora [hh, mm, ss], ojo, como str
 			
 			#Ahora componemos la lista nueva que va a devolver, pasamos a entero los datos correspondientes ya que salen de la linea del archivo como strings
-			#En 2018 algunos valores de ocupación y/o carga y/o intensidad y/o vmed vienen con el valor NaN y da error al hacerle el int(), comprovamos el valor y si es NaN lo cambiamos por -1
-			
-			if lista[3]=="NaN":
-				lista[3]=(-1)
-
-			if lista[4]=="NaN":
-				lista[4]=(-1)
-
-			if lista[5]=="NaN":
-				lista[5]=(-1)
-
-			if lista[6]=="NaN":
-				lista[6]=(-1)
-
 			lista_return=[int(lista[0]), int(lista_dia[0]), int(lista_dia[1]), int(lista_dia[2]), int(lista_hora[0]), int(lista_hora[1]), lista[2], int(lista[3]), int(lista[4]), int(lista[5]), int(lista[6]), lista[7], int(lista[8])]
+
+		
 
 		return lista_return
 
@@ -378,6 +354,8 @@ def extrae_lineas(codigo, ruta_archivo, hora_inicial, hora_final):
 	contador=0
 	resultado=[]
 
+	#esta función falla cuando el archivo de datos diarios tiene una linea en blanco a principio del archivo
+
 	for i in datos:
 		clave=""
 		for j in i:
@@ -388,6 +366,7 @@ def extrae_lineas(codigo, ruta_archivo, hora_inicial, hora_final):
 			else:
 				clave+=j
 		
+		#print("clave: ",clave)
 		clave_int=int(clave)
 
 		if(clave_int==codigo): #si el codigo de la linea coincide con el codigo del punto de medida que queremos leer
@@ -1422,96 +1401,3 @@ def Lista_horaria_a_hoja_de_calculo(medidor, fechas, lista_resultado_horaria, ru
 		ws.cell(row=(i+2), column=12, value=lista_resultado_horaria[i][13]) #mediciones-hora
 
 	libro.save(ruta_archivo_resultado)
-
-
-#-------------------------------------------------------------------------------------
-
-# Generamos una función para leer las líneas de un fichero.
-
-def get_lines(fname):
-    with open(fname, 'rt') as file:
-        lines = 0
-        for l in file: lines += 1
-    return lines
-
-
-#-------------------------------------------------------------------------------------
-
-# Función para dividir el fichero csv en varios
-
-"""
-
-Le pasamos como parámetro:
-path_csv -> fichero en el que está el csv
-path -> carpeta en la que va a almacenar los ficheros partidos
-splitby -> numero de cortes que le vamos a dar al fichero
-
-Esta función se salta la primera línea de definición de datos, los cortes contendrán únicamente datos.
-
-
-"""
-
-
-def split_csv(path_csv, path, splitby):
-
-    with open(path_csv, 'r') as csvfile, ExitStack() as stack:
-        # Líneas totales del fichero
-        lines = get_lines(path_csv)
-        print("El archivo tiene ", lines, "líneas.")
-
-        # número de líneas por fichero (excepto el último)
-        chunk_num_lines = math.floor(lines/splitby)
-        chunk_num_lines = chunk_num_lines if chunk_num_lines > 0 else 1
-
-        # Máximo de ficheros que podemos generar por si ponemos un número "loco"
-        max_files = min(lines, splitby)
-
-        # Archivos que vamos a crear
-        filenames = [ path +'corte{}.csv'.format(i) for i in range(0, max_files)]
-
-        # Ficheros (Chunks)
-        files = [ stack.enter_context(open(fname, 'wt')) for fname in filenames ]
-
-        # Índice del fihcero actual
-        file_index = 0
-        # Máximo índice
-        max_index = len(filenames) - 1
-
-        # Saltamos la primera línea de definiciones
-        next(csvfile) 
-
-        # Recorremos el fichero
-        for idx, line in enumerate(csvfile):
-            # Obtenemos el chunk sobre el que escribir
-            # en base al índice actual
-            file = files[file_index]
-            # Escribimos línea
-            file.write(line)
-
-            # Actualizamos el índice cuando hayamos escrito
-            # el máximo de líneas para el fichero
-            # escepto si file_index == max_index
-            if (idx + 1) % chunk_num_lines == 0 and file_index < max_index:
-                file_index += 1
-
-
-#-------------------------------------------------------------------------------
-
-# LISTAR ARCHIVOS DE UNA CARPETA
-
-"""
-
-La ruta de la carpeta se le pasa como argumento.
-Devuelve una lista con las diferentes rutas de los archivos.
-
-"""
-
-def ls(ruta):
-    return [arch.name for arch in Path(ruta).iterdir() if arch.is_file()]
-
-
-
-
-#-------------------------------------------------------------------------------
-
-
