@@ -103,7 +103,7 @@ Comprueba el numero de elementos y el tipo de datos de cada elemento una vez tra
 [0]clave 			int
 [1]fecha_anio 		int
 [2fecha_mes 		int
-[3]fecha_dia 		int 
+[3]fecha_dia 		int
 [4]fecha_hora 		int
 [5]fecha_minuto 	int
 [6]=descripcion 	string
@@ -152,14 +152,14 @@ Si el conjunto de datos lleva este campo simplemente lo quitaremos de la lista r
 
 toma el campo fecha y lo separa en dos con el metodo split y el separador " " (espacio en blanco)
 de la lista generada, toma el primer elemento y lo separa por "-" siendo el primer elemento el año, luego mes y luego día
-de la lista generada, toma el segundo elemento y lo separa por ":" siendo el primer elemento la hora y el segundo los minutos, el tercero lo desechamos. 
+de la lista generada, toma el segundo elemento y lo separa por ":" siendo el primer elemento la hora y el segundo los minutos, el tercero lo desechamos.
 
 Devuelve la lista pero con el formato de fecha separado.
 
 [0]clave 			int
 [1]fecha_anio 		int
 [2fecha_mes 		int
-[3]fecha_dia 		int 
+[3]fecha_dia 		int
 [4]fecha_hora 		int
 [5]fecha_minuto 	int
 [6]=descripcion 	string
@@ -189,10 +189,10 @@ def separa_fechas(lista):
 			lista_aux=fecha.split(" ")
 			lista_dia=lista_aux[0].split("-") #aqui tenemos el dia [yyyy, mm, dd], ojo, como str
 			lista_hora=lista_aux[1].split(":") #aqui tenemos la hora [hh, mm, ss], ojo, como str
-			
+
 			#Ahora componemos la lista nueva que va a devolver, pasamos a entero los datos correspondientes ya que salen de la linea del archivo como strings
 			#En 2018 algunos valores de ocupación y/o carga y/o intensidad y/o vmed vienen con el valor NaN y da error al hacerle el int(), comprovamos el valor y si es NaN lo cambiamos por -1
-			
+
 			if lista[3]=="NaN":
 				lista[3]=(-1)
 
@@ -256,7 +256,7 @@ def genera_ruta_carpeta(anio, mes, ruta_main): #hay que ver el tema ruta main, p
 			nombre_mes="Diciembre"
 		else:
 			nombre_mes="Mes invalido, fuera de rango" #en algun momento habria que gestionar una excepcion al principio de esta funcion por si el mes viene fuera de rango
-		
+
 		#generamos la ruta del archivo, con la parte fija mas la variable
 		ruta_carpeta=ruta_main+"\\Datos trafico\\" + nombre_mes + " " + str(anio)
 
@@ -273,7 +273,7 @@ Con esta utilidad vamos a generar un string correspondiente a la direccion del a
 
 Nos pasan como argumento el anio y mes en formato YYYY, MM, DD
 
-El directorio raiz en el que vamos a ir guardando los datos es la carpeta Visor de trafico, dentro de la cual estará el main, 
+El directorio raiz en el que vamos a ir guardando los datos es la carpeta Visor de trafico, dentro de la cual estará el main,
 la utilidad de procesar datos y una carpeta Datos trafico en la que se irán almacenando las carpetas de los diferentes meses.
 
 Las carpetas de los sucesivos meses estan nombradas con el nombre del mes en letra, primera mayuscula y el año en formato YYYY
@@ -315,9 +315,9 @@ def genera_ruta_archivo(anio, mes, dia, ruta_main):
 			nombre_mes="Diciembre"
 		else:
 			nombre_mes="Mes invalido, fuera de rango" #en algun momento habria que gestionar una excepcion al principio de esta funcion por si el mes viene fuera de rango
-		
+
 		#generamos la ruta del archivo, con la parte fija mas la variable
-		ruta_archivo=ruta_main+"\\Datos trafico\\" + nombre_mes + " " + str(anio) + "\\" + str(anio) + "-" + str(mes) + "-" + str(dia)
+		ruta_archivo=ruta_main+"/Datos trafico/" + nombre_mes + " " + str(anio) + "/" + str(anio) + "-" + str(mes) + "-" + str(dia)
 
 		return ruta_archivo
 
@@ -357,7 +357,7 @@ cada linea es una lista con esta forma:
 [0]clave 			int
 [1]fecha_anio 		int
 [2fecha_mes 		int
-[3]fecha_dia 		int 
+[3]fecha_dia 		int
 [4]fecha_hora 		int
 [5]fecha_minuto 	int
 [6]=descripcion 	string
@@ -380,7 +380,7 @@ def extrae_lineas(codigo, ruta_archivo, hora_inicial, hora_final):
 
 	for i in datos:
 		if(i=="\n"): #Pasamos la línea en caso de que esté vacía, inicializamos clave_int para que no de error.
-			clave_int=0 
+			clave_int=0
 
 		else:
 			clave=""
@@ -391,14 +391,14 @@ def extrae_lineas(codigo, ruta_archivo, hora_inicial, hora_final):
 					break
 				else:
 					clave+=j
-			
+
 			clave_int=int(clave)
 
 		if(clave_int==codigo): #si el codigo de la linea coincide con el codigo del punto de medida que queremos leer
 			linea_datos=i.split(",")
 			#ahora hay que formatear los datos de esta linea y pasar los enteros a enteros :) los string salen con comillas así que se las quitamos
 			linea_datos[0]=clave_int #sustituimos la clave en string por la clave en numero
-			
+
 			anio=int(linea_datos[1].replace(chr(39),"")) #sustituimos char(39), las comillas, por un espacio vacio para poder transformar a entero
 			linea_datos[1]=anio
 
@@ -437,12 +437,12 @@ def extrae_lineas(codigo, ruta_archivo, hora_inicial, hora_final):
 
 			#en linea_datos ya tenemos los datos de la linea coincidente con el codigo en los formatos adecuados
 
-		
+
 		#en clave_int ya tenemos el codigo de la linea en formato entero
 		#si el campo hora lina_datos[4] es mayor o igual a hora_inicial y menor o igual que hora_final añadimos la lista_aux a la lista_resultado
 		if(clave_int==codigo and linea_datos[4]>=hora_inicial and linea_datos[4]<=hora_final):
 			resultado.append(linea_datos)
-		
+
 		#contador+=1
 		#if (contador>=21000):
 		#	break
@@ -473,7 +473,7 @@ def linea_a_lista(linea_datos):
 	lista_datos=linea_datos.split(",")
 	#ahora hay que formatear los datos de esta linea y pasar los enteros a enteros :) los string salen con comillas así que se las quitamos
 	lista_datos[0]=clave_int #sustituimos la clave en string por la clave en numero
-	
+
 	anio=int(lista_datos[1].replace(chr(39),"")) #sustituimos char(39), las comillas, por un espacio vacio para poder transformar a entero
 	lista_datos[1]=anio
 
@@ -548,7 +548,7 @@ def pide_fecha():
 		except ValueError:
 			pass
 
-	while (anio<2013 or anio>2018): #si el anio esta fuera del rango 2013 - 2018 
+	while (anio<2013 or anio>2018): #si el anio esta fuera del rango 2013 - 2018
 		try:
 			anio=int(input("Introduce el año (2013 - 2018): "))
 		except ValueError:
@@ -613,7 +613,7 @@ Pedimos hora final
 
 Vamos a comprobar que la fecha y hora iniciales son anteriores que la fecha y hora finales.
 
-Devuelve una lista con los siguientes valores: 
+Devuelve una lista con los siguientes valores:
 
 lista_return=[anio_inicial, mes_inicial, dia_inicial, hora_inicial, anio_final, mes_final, dia_final, hora_final]
 
@@ -625,15 +625,15 @@ lista_return=[anio_inicial, mes_inicial, dia_inicial, hora_inicial, anio_final, 
 def pide_dias():
 
 	anio_inicial=0
-	
+
 	mes_inicial=0
-		
+
 	dia_inicial=0
-	
+
 	hora_inicial=25
-	
+
 	pide_dia=True
-	
+
 
 	resultado=[]
 
@@ -651,9 +651,9 @@ def pide_dias():
 
 	if (prueba=="x"):
 		return [2018, 1, 1, 10, 2018, 1, 1, 22]
-			
 
-	while (anio_inicial<2013 or anio_inicial>2018): #si el anio esta fuera del rango 2013 - 2018 
+
+	while (anio_inicial<2013 or anio_inicial>2018): #si el anio esta fuera del rango 2013 - 2018
 		try:
 			anio_inicial=int(input("Introduce el año inicial (2013 - 2018): "))
 		except ValueError:
@@ -701,7 +701,7 @@ def pide_dias():
 		hora_final=25
 		pide_dia_final=True
 
-		while (anio_final<2013 or anio_final>2018): #si el anio esta fuera del rango 2013 - 2018 
+		while (anio_final<2013 or anio_final>2018): #si el anio esta fuera del rango 2013 - 2018
 			try:
 				anio_final=int(input("Introduce el año final (2013 - 2018) - Si no pones nada se asume que es igual al año inicial: "))
 			except ValueError:
@@ -767,7 +767,7 @@ def pide_dias():
 
 		input("\n")
 
-	
+
 	lista_return=[anio_inicial, mes_inicial, dia_inicial, hora_inicial, anio_final, mes_final, dia_final, hora_final]
 
 	return lista_return
@@ -808,7 +808,7 @@ def cargar_datos_espiras_lista():
 	ruta="C:\\Datos Trafico Madrid\\Datos medidores\\Febrero 2018\\pmed_ubicacion_02-2018.csv"
 
 	datos=open(ruta,mode="r", encoding="Latin-1")
-	
+
 	contador=0
 
 	lista_resultado=[]
@@ -897,9 +897,9 @@ Incluimos un valor nuevo que indique el numero de mediciones en esa hora (0 a 4)
 
 """
 
-
-from Modulos.Modulos import *
-from io import open
+##### CAMBIADO POR SERGIO
+#from Modulos.Modulos import *
+#from io import open
 
 def agrupar_mediciones_horarias(lista_origen):
 
@@ -917,7 +917,7 @@ def agrupar_mediciones_horarias(lista_origen):
 	for i in lista_origen:
 		if hora_actual!=i[4]:
 			hora_actual=i[4]
-			
+
 			#los valores de lista_horaria funcionan como acumulador, cuando cambiamos de hora, los dividimos entre el numero de mediciones horarias
 			lista_horaria[7]=lista_horaria[7]/(4-lista_horaria[11])
 			lista_horaria[8]=lista_horaria[8]/(4-lista_horaria[11])
@@ -954,7 +954,7 @@ def agrupar_mediciones_horarias(lista_origen):
 	resultado.pop(0)
 
 	return resultado
-			
+
 
 #----------------------------------------------------------------------
 
@@ -1001,7 +1001,7 @@ def suma_dia(anio, mes, dia): #los que recibe por parámetro son los días actua
 	mes_return=mes
 	anio_return=anio
 
-	bisiesto=False 
+	bisiesto=False
 
 	#aquí habrá que meter una comprobación de si dia, mes y año están dentro del rango permitido y si no lanzar una excepción
 
@@ -1111,7 +1111,7 @@ Pseudocódigo:
 
 inicializamos la lista a retornar
 
-comprobamos que la fecha incial es anterior a la fecha final (se supone que tiene que venir bien hecho, pero por si queremos usar 
+comprobamos que la fecha incial es anterior a la fecha final (se supone que tiene que venir bien hecho, pero por si queremos usar
 la función en otro sitio no está de más la comprobación)
 
 si la fecha inicial y final son iguales:
@@ -1209,7 +1209,7 @@ def pide_solo_fecha():
 	resultado=[]
 
 
-	while (anio<2013 or anio>2018): #si el anio esta fuera del rango 2013 - 2018 
+	while (anio<2013 or anio>2018): #si el anio esta fuera del rango 2013 - 2018
 		try:
 			anio=int(input("Introduce el año (2013 - 2018): "))
 		except ValueError:
@@ -1239,7 +1239,7 @@ def pide_solo_fecha():
 			if(dia>=1 and dia<=28):
 				pide_dia=False
 
-	
+
 	lista_return=[anio, mes, dia]
 
 	return lista_return
@@ -1256,20 +1256,20 @@ La función toma la lista resultado en formato minutos de una consulta y lo conv
 
 Parámetros:
 
-Le pasamos 
+Le pasamos
 
 	Código del medidor
 
 	Lista de fechas inicial y final = [anio_inicial, mes_inicial, dia_inicial, hora_inicial, anio_final, mes_final, dia_final, hora_final]
 
-	La lista resultado en formato minutos por parámetro. 
+	La lista resultado en formato minutos por parámetro.
 
 Formato en minutos es una lista en la que cada elemento es una lista con los siguientes apartados:
 
 [0]medidor 			int
 [1]fecha_anio 		int
 [2fecha_mes 		int
-[3]fecha_dia 		int 
+[3]fecha_dia 		int
 [4]fecha_hora 		int
 [5]fecha_minuto 	int
 [6]=descripcion 	string
@@ -1306,7 +1306,7 @@ Fila i+2:
 	columna 10 = lista_resultado[i].[10] #campo vmed
 	columna 11 = lista_resultado[i].[11] #campo error
 	columna 12 = lista_resultado[i].[12] #campo periodo
-	
+
 
 """
 
@@ -1366,19 +1366,19 @@ Lo mismo que hacemos para las consultas en formato minutos pero para las consult
 
 Formato horario es una lista en la que cada elemento es una lista con los siguientes apartados:
 
-[0]	Medidor 			int 
-[1] Año 				int 
-[2] Mes 				int 
-[3] Día 				int 
-[4] Hora 				int 
-[5] Min-código 			int  - Se mantiene pero contendrá 99 para indicar que es una lista con formato horario 
-[6] Descripcion 		string 
+[0]	Medidor 			int
+[1] Año 				int
+[2] Mes 				int
+[3] Día 				int
+[4] Hora 				int
+[5] Min-código 			int  - Se mantiene pero contendrá 99 para indicar que es una lista con formato horario
+[6] Descripcion 		string
 [7] Intensidad 			int
 [8] Ocupacion 			int
-[9] Carga 				int 
+[9] Carga 				int
 [10] VMed 				int - Será 0 cuando el medidoor no disponga de capacidad de medir velocidades. Media de las velocidades medias registradas
 [11] Errores-hora 		int - Número de errores que ha arrojado el medidor en una hora
-[12] Periodo 			int 
+[12] Periodo 			int
 [13] Mediciones-hora 	int - 4 menos el número de errores
 
 """
@@ -1411,7 +1411,7 @@ def Lista_horaria_a_hoja_de_calculo(medidor, fechas, lista_resultado_horaria, ru
 
 	#Almacenamos el número de elementos de la lista
 	longitud_lista=len(lista_resultado_horaria)
-	#Esto da error y tampoco se bien qué función tiene. 
+	#Esto da error y tampoco se bien qué función tiene.
 	#campos_lista_datos=len(lista_resultado_horaria[0])
 
 	for i in range(longitud_lista):
@@ -1485,7 +1485,7 @@ def split_csv(path_csv, path, splitby):
         max_index = len(filenames) - 1
 
         # Saltamos la primera línea de definiciones
-        next(csvfile) 
+        next(csvfile)
 
         # Recorremos el fichero
         for idx, line in enumerate(csvfile):
@@ -1520,5 +1520,3 @@ def ls(ruta):
 
 
 #-------------------------------------------------------------------------------
-
-
